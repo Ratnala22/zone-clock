@@ -1,4 +1,4 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Whatsapp
+# <img src="public/icons/icon_48.png" width="45" align="left"> Zone-Clock Extension
 
 My Chrome Extension
 
