@@ -1,4 +1,6 @@
 'use strict';
+import { getLocalInfo } from 'phone-number-to-timezone';
+let phoneDataList = [];
 const CHAT_SELECTOR = '#main > header > div._amie > div > div > div';
 const TAB_SELECTOR = '#main > header';
 let lastInjectedName = ''; // Keep track of the last injected name
@@ -101,11 +103,42 @@ function temper() {
 }
 
 function extractAndStoreContact() {
-  const path = document.querySelector(
-    '#app > div > div.three._aigs > div._aigv._aig-._aohg > span > div > span > div > div > section > div.x13mwh8y.x1q3qbx4.x1wg5k15.xajqne3.x1n2onr6.x1c4vz4f.x2lah0s.xdl72j9.xyorhqc.x13x2ugz.x7sb2j6.x6x52a7.x1i2zvha.xxpdul3 > div.x1c4vz4f.xs83m0k.xdl72j9.x1g77sc7.x78zum5.xozqiw3.x1oa3qoh.x12fk4p8.xeuugli.x2lwn1j.x1nhvcw1.xdt5ytf.x6s0dn4'
-  );
+  const retryInterval = 500;
+  const maxRetries = 10;
 
-  const result = document.querySelector(path);
+  let retries = 0;
+  function tryToFindElement() {
+    const path = document.querySelector(
+      '#app > div > div.three._aigs > div._aigv._aig-._aohg > span > div > span > div > div > section > div.x13mwh8y.x1q3qbx4.x1wg5k15.xajqne3.x1n2onr6.x1c4vz4f.x2lah0s.xdl72j9.xyorhqc.x13x2ugz.x7sb2j6.x6x52a7.x1i2zvha.xxpdul3 > div.x1c4vz4f.xs83m0k.xdl72j9.x1g77sc7.x78zum5.xozqiw3.x1oa3qoh.x12fk4p8.xeuugli.x2lwn1j.x1nhvcw1.xdt5ytf.x6s0dn4'
+    );
 
-  console.log(result.innerHTML);
+    if (path) {
+      // console.log(path.innerHTML);
+      const details = path.querySelectorAll('span');
+      let contact = details[0].innerText;
+      let phone = details[1].innerText;
+      try {
+        const phoneInfo = getLocalInfo(phone);
+        const zoned = phoneInfo.time.zone;
+        const offsetString = zoned.replace('GMT', '');
+        const offset = parseFloat(offsetString);
+        phoneDataList.push({ contact, phone, offset });
+        console.log('phoneDataList>>>');
+        console.log(phoneDataList);
+        chrome.storage.local.set({ phoneDataList: phoneDataList }, function () {
+          console.log('Contact data updated.');
+        });
+      } catch (error) {
+        console.error('Error getting phone info:', error);
+      }
+    } else if (retries < maxRetries) {
+      retries++;
+      console.log('Retrying to find the element...');
+      setTimeout(tryToFindElement, retryInterval);
+    } else {
+      console.log('h2 element not found after maximum retries.');
+    }
+  }
+
+  tryToFindElement();
 }
