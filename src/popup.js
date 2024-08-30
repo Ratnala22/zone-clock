@@ -1,7 +1,7 @@
 import { getLocalInfo } from 'phone-number-to-timezone';
 
 let phoneDataList = [];
-const save = document.querySelector('#saveBtn');
+// const save = document.querySelector('#saveBtn');
 
 function initializeData() {
   // chrome.runtime.sendMessage({"action":"startTimer"})
@@ -14,36 +14,36 @@ function initializeData() {
   });
 }
 
-save.addEventListener('click', function () {
-  const contactNameInput = document.getElementById('contactNameInput');
-  const phoneNumberInput = document.getElementById('phoneNumberInput');
-  const contact = contactNameInput.value.trim();
-  const phone = phoneNumberInput.value.trim();
+// save.addEventListener('click', function () {
+//   const contactNameInput = document.getElementById('contactNameInput');
+//   const phoneNumberInput = document.getElementById('phoneNumberInput');
+//   const contact = contactNameInput.value.trim();
+//   const phone = phoneNumberInput.value.trim();
 
-  if (!contact || !phone) {
-    alert('Please enter both contact name and phone number.');
-    return;
-  }
+//   if (!contact || !phone) {
+//     alert('Please enter both contact name and phone number.');
+//     return;
+//   }
 
-  try {
-    const phoneInfo = getLocalInfo(phone);
-    const zoned = phoneInfo.time.zone;
-    const offsetString = zoned.replace('GMT', '');
-    const offset = parseFloat(offsetString);
+//   try {
+//     const phoneInfo = getLocalInfo(phone);
+//     const zoned = phoneInfo.time.zone;
+//     const offsetString = zoned.replace('GMT', '');
+//     const offset = parseFloat(offsetString);
 
-    phoneDataList.push({ contact, phone, offset });
+//     phoneDataList.push({ contact, phone, offset });
 
-    // Save updated list to storage
-    chrome.storage.local.set({ phoneDataList: phoneDataList }, function () {
-      console.log('Contact data updated.');
-      contactNameInput.value = ''; // Clear input field
-      phoneNumberInput.value = ''; // Clear input field
-      displayPhoneData(); // Refresh display
-    });
-  } catch (error) {
-    console.error('Error getting phone info:', error);
-  }
-});
+//     // Save updated list to storage
+//     chrome.storage.local.set({ phoneDataList: phoneDataList }, function () {
+//       console.log('Contact data updated.');
+//       contactNameInput.value = ''; // Clear input field
+//       phoneNumberInput.value = ''; // Clear input field
+//       displayPhoneData(); // Refresh display
+//     });
+//   } catch (error) {
+//     console.error('Error getting phone info:', error);
+//   }
+// });
 
 function convertGMTToLocal(offsetHours) {
   const gmtDate = new Date();
@@ -92,15 +92,15 @@ function updateTimes() {
   displayPhoneData();
 }
 
-const resetBtn = document.querySelector('#clearBtn');
-resetBtn.addEventListener('click', function () {
-  phoneDataList = [];
-  document.getElementById('phoneDataList').innerHTML =
-    'No contact data stored.';
-  chrome.storage.local.remove('phoneDataList', function () {
-    console.log('Phone data cleared from storage.');
-  });
-});
+// const resetBtn = document.querySelector('#clearBtn');
+// resetBtn.addEventListener('click', function () {
+//   phoneDataList = [];
+//   document.getElementById('phoneDataList').innerHTML =
+//     'No contact data stored.';
+//   chrome.storage.local.remove('phoneDataList', function () {
+//     console.log('Phone data cleared from storage.');
+//   });
+// });
 
 document.addEventListener('DOMContentLoaded', initializeData);
 
