@@ -1,10 +1,18 @@
 'use strict';
 import { getLocalInfo } from 'phone-number-to-timezone';
-let phoneDataList = [];
+
 const CHAT_SELECTOR = '#main > header > div._amie > div > div > div';
 const TAB_SELECTOR = '#main > header';
 let lastInjectedName = ''; // Keep track of the last injected name
+let phoneDataList = [];
 
+function initializePhoneData() {
+  chrome.storage.local.get('phoneDataList', function (result) {
+    phoneDataList = result.phoneDataList || [];
+    console.log('Phone data retrieved:', phoneDataList);
+  });
+}
+initializePhoneData();
 const observer = new MutationObserver(() => {
   try {
     console.log('observer >>>');
@@ -65,6 +73,7 @@ function temper() {
           ) {
             const element = document.createElement('span');
             element.style.fontSize = '12px';
+            element.style.paddingLeft = '5px';
             element.innerText = dataToInject;
 
             targetElement.appendChild(element);
@@ -84,19 +93,38 @@ function temper() {
         ) {
           const element = document.createElement('span');
           element.style.fontSize = '12px';
+          element.style.paddingLeft = '5px';
           element.innerText = '(click here)';
           targetElement.appendChild(element);
+          lastInjectedName = '(click here)';
           element.addEventListener('click', () => {
             console.log('Clicked it>>>>');
-            setTimeout(() => {
-              'delaying..';
-            }, 7000);
             extractAndStoreContact();
+            setInterval(() => {
+              if (targetElement.contains(element)) {
+                targetElement.removeChild(element);
+                console.log('Element removed after click');
+              }
+              console.log('delaying...');
+            }, 500);
           });
-          lastInjectedName = '(click here)';
+
+          lastInjectedName = '';
         }
       }
     } else {
+      const targetElement = document.querySelector(CHAT_SELECTOR);
+      if (
+        targetElement &&
+        !targetElement.textContent.includes('(click here)')
+      ) {
+        const element = document.createElement('span');
+        element.style.fontSize = '12px';
+        element.style.paddingLeft = '5px';
+        element.innerText = '(click here)';
+        targetElement.appendChild(element);
+        lastInjectedName = '(click here)';
+      }
       console.log('No contact data found.');
     }
   });
@@ -105,7 +133,6 @@ function temper() {
 function extractAndStoreContact() {
   const retryInterval = 500;
   const maxRetries = 10;
-
   let retries = 0;
   function tryToFindElement() {
     const path = document.querySelector(
@@ -113,7 +140,6 @@ function extractAndStoreContact() {
     );
 
     if (path) {
-      // console.log(path.innerHTML);
       const details = path.querySelectorAll('span');
       let contact = details[0].innerText;
       let phone = details[1].innerText;
