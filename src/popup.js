@@ -75,15 +75,6 @@ function displayPhoneData() {
 }
 
 function updateTimes() {
-  // setInterval(function() {
-  //   phoneDataList.forEach(function(data) {
-  //     const updatedLocalTime = convertGMTToLocal(data.offset);
-  //     data.localTime = updatedLocalTime; // Update the local time directly in the object
-  //   });
-
-  //   // Update the display every minute
-  //   displayPhoneData();
-  // }, 60000); // 60000ms = 1 minute
   phoneDataList.forEach(function (data) {
     const updatedLocalTime = convertGMTToLocal(data.offset);
     data.localTime = updatedLocalTime; // Update the local time directly in the object
@@ -91,16 +82,6 @@ function updateTimes() {
 
   displayPhoneData();
 }
-
-// const resetBtn = document.querySelector('#clearBtn');
-// resetBtn.addEventListener('click', function () {
-//   phoneDataList = [];
-//   document.getElementById('phoneDataList').innerHTML =
-//     'No contact data stored.';
-//   chrome.storage.local.remove('phoneDataList', function () {
-//     console.log('Phone data cleared from storage.');
-//   });
-// });
 
 document.addEventListener('DOMContentLoaded', initializeData);
 

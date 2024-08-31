@@ -9,6 +9,7 @@ const CHAT_SELECTOR = '#main > header > div._amie > div > div > div';
 const TAB_SELECTOR = '#main > header';
 let lastInjectedName = ''; // Keep track of the last injected name
 let phoneDataList = [];
+let lastInjectedId = '';
 
 function initializePhoneData() {
   chrome.storage.local.get('phoneDataList', function (result) {
@@ -45,12 +46,15 @@ function convertGMTToLocal(offsetHours) {
   const localDate = new Date(gmtDate.getTime() + offsetHours * 60 * 60 * 1000);
   let localHours = localDate.getUTCHours();
   const localMinutes = localDate.getUTCMinutes();
+  const localSeconds = localDate.getUTCSeconds();
   const localPeriod = localHours >= 12 ? 'PM' : 'AM';
   localHours = localHours % 12 || 12;
   const formattedMinutes =
     localMinutes < 10 ? '0' + localMinutes : localMinutes;
   return `${localHours}:${formattedMinutes} ${localPeriod}`;
 }
+
+const unq = new Date().getTime();
 
 function temper() {
   let nameTag = document.querySelector(
@@ -67,24 +71,38 @@ function temper() {
       result.phoneDataList.forEach((contact) => {
         if (contact.contact.trim() === nameHeader) {
           flag = true;
-          const localTime = convertGMTToLocal(contact.offset);
-          const dataToInject = ` (Local Time: ${localTime})`;
+          function updateTimeInWA() {
+            const localTime = convertGMTToLocal(contact.offset);
+            const dataToInject = ` (Local Time: ${localTime})`;
 
-          const targetElement = document.querySelector(CHAT_SELECTOR);
-          if (
-            targetElement &&
-            !targetElement.textContent.includes(dataToInject)
-          ) {
-            const element = document.createElement('span');
-            element.style.fontSize = '12px';
-            element.style.paddingLeft = '5px';
-            element.innerText = dataToInject;
+            const targetElement = document.querySelector(CHAT_SELECTOR);
+            if (
+              targetElement &&
+              !targetElement.textContent.includes(dataToInject)
+            ) {
+              const element = document.createElement('span');
+              lastInjectedId = nameHeader + `${new Date().getTime()}`;
+              element.setAttribute('id', lastInjectedId);
+              element.style.fontSize = '12px';
+              element.style.paddingLeft = '5px';
+              element.innerText = dataToInject;
 
-            targetElement.appendChild(element);
-            console.log('Injected data:', dataToInject);
+              targetElement.appendChild(element);
+              console.log('Injected data:', dataToInject);
 
-            lastInjectedName = nameHeader;
+              lastInjectedName = nameHeader;
+            }
+            setInterval(() => {
+              updateTime();
+            }, 60000);
           }
+          function updateTime() {
+            const element = document.getElementById(lastInjectedId);
+            const localTime = convertGMTToLocal(contact.offset);
+            const dataToInject = ` (Local Time: ${localTime})`;
+            element.innerText = dataToInject;
+          }
+          updateTimeInWA();
         } else {
           console.log(`No match for: ${contact.contact}`);
         }

@@ -13,8 +13,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Whatsapp",
-    "default_popup": "popup.html"
+    "default_title": "Whatsapp"
   },
   "permissions": ["storage", "alarms", "activeTab", "tabs", "scripting"],
   "content_scripts": [
