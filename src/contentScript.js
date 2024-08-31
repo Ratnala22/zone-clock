@@ -1,3 +1,7 @@
+// chrome.storage.local.clear(function () {
+//   console.log('All data cleared from storage.');
+// });
+
 'use strict';
 import { getLocalInfo } from 'phone-number-to-timezone';
 
@@ -106,7 +110,7 @@ function temper() {
                 console.log('Element removed after click');
               }
               console.log('delaying...');
-            }, 500);
+            }, 700);
           });
 
           lastInjectedName = '';
@@ -124,6 +128,19 @@ function temper() {
         element.innerText = '(click here)';
         targetElement.appendChild(element);
         lastInjectedName = '(click here)';
+        element.addEventListener('click', () => {
+          console.log('Clicked it>>>>');
+          extractAndStoreContact();
+          setInterval(() => {
+            if (targetElement.contains(element)) {
+              targetElement.removeChild(element);
+              console.log('Element removed after click');
+            }
+            console.log('delaying...');
+          }, 500);
+        });
+
+        lastInjectedName = '';
       }
       console.log('No contact data found.');
     }
