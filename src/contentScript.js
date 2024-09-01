@@ -20,11 +20,10 @@ function initializePhoneData() {
 initializePhoneData();
 const observer = new MutationObserver(() => {
   try {
-    console.log('observer >>>');
     const chatElem = document.querySelector(TAB_SELECTOR);
 
     if (chatElem) {
-      temper();
+      dataInjection();
     }
   } catch (error) {
     if (error.message.includes('Extension context invalidated')) {
@@ -46,7 +45,6 @@ function convertGMTToLocal(offsetHours) {
   const localDate = new Date(gmtDate.getTime() + offsetHours * 60 * 60 * 1000);
   let localHours = localDate.getUTCHours();
   const localMinutes = localDate.getUTCMinutes();
-  const localSeconds = localDate.getUTCSeconds();
   const localPeriod = localHours >= 12 ? 'PM' : 'AM';
   localHours = localHours % 12 || 12;
   const formattedMinutes =
@@ -54,9 +52,7 @@ function convertGMTToLocal(offsetHours) {
   return `${localHours}:${formattedMinutes} ${localPeriod}`;
 }
 
-const unq = new Date().getTime();
-
-function temper() {
+function dataInjection() {
   let nameTag = document.querySelector(
     '#main > header > div._amie > div > div > div > span'
   );
@@ -88,7 +84,6 @@ function temper() {
               element.innerText = dataToInject;
 
               targetElement.appendChild(element);
-              console.log('Injected data:', dataToInject);
 
               lastInjectedName = nameHeader;
             }
@@ -120,7 +115,6 @@ function temper() {
           targetElement.appendChild(element);
           lastInjectedName = '(click here)';
           element.addEventListener('click', () => {
-            console.log('Clicked it>>>>');
             extractAndStoreContact();
             setInterval(() => {
               if (targetElement.contains(element)) {
@@ -147,15 +141,12 @@ function temper() {
         targetElement.appendChild(element);
         lastInjectedName = '(click here)';
         element.addEventListener('click', () => {
-          console.log('Clicked it>>>>');
           extractAndStoreContact();
           setInterval(() => {
             if (targetElement.contains(element)) {
               targetElement.removeChild(element);
-              console.log('Element removed after click');
             }
-            console.log('delaying...');
-          }, 500);
+          }, 700);
         });
 
         lastInjectedName = '';
@@ -164,7 +155,7 @@ function temper() {
     }
   });
 }
-
+//TODO: update to observer implementation
 function extractAndStoreContact() {
   const retryInterval = 500;
   const maxRetries = 10;
@@ -184,8 +175,6 @@ function extractAndStoreContact() {
         const offsetString = zoned.replace('GMT', '');
         const offset = parseFloat(offsetString);
         phoneDataList.push({ contact, phone, offset });
-        console.log('phoneDataList>>>');
-        console.log(phoneDataList);
         chrome.storage.local.set({ phoneDataList: phoneDataList }, function () {
           console.log('Contact data updated.');
         });
@@ -194,7 +183,6 @@ function extractAndStoreContact() {
       }
     } else if (retries < maxRetries) {
       retries++;
-      console.log('Retrying to find the element...');
       setTimeout(tryToFindElement, retryInterval);
     } else {
       console.log('h2 element not found after maximum retries.');
