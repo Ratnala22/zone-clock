@@ -2,9 +2,9 @@
 
 ## Steps to Run Locally
 1. Download the project from the repo
-2. cd <folder> (unzipped)
+2. cd downloaded-folder (unzipped)
 3. npm install, npm run watch
-4. open chrome://extensions/ (put the developer mode on)
+4. Open chrome://extensions/ (Turn the developer mode on)
 5. click on load unpacked and select the folder/build
 6. open WhatsApp Web
 
