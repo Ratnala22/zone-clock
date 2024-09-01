@@ -8,8 +8,8 @@
 5. click on load unpacked and select the folder/build
 6. Open WhatsApp Web
 
-## For now it works for only the contacts which are already saved only, soon will update it for unsaved ones too
-## This Extension will not store your contact details. Details are  stored only in your local chrome storage
+### For now it works for only the contacts which are already saved only, soon will update it for unsaved ones too *
+### This Extension will not store your contact details. Details are  stored only in your local chrome storage
 
 
 This project was bootstrapped with [Chrome Extension CLI](https://github.com/dutiyesh/chrome-extension-cli)
