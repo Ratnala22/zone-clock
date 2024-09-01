@@ -1,6 +1,6 @@
 # <img src="public/icons/icon_48.png" width="45" align="left"> Zone-Clock Extension
 
-##Steps to Run Locally
+## Steps to Run Locally
 1. Download the project from the repo
 2. cd <folder> (unzipped)
 3. npm install, npm run watch
